@@ -184,6 +184,20 @@ async def get_attachment(
 
 # -----------------------------------------------------------------------------
 
+async def update_comment(
+    db: AsyncSession,
+    web_name: str,
+    topic_name: str,
+    filename: str,
+    comment: str,
+) -> Attachment:
+    """Update the comment on an existing attachment."""
+    attachment, _path = await get_attachment(db, web_name, topic_name, filename)
+    attachment.comment = comment
+    await db.flush()
+    return attachment
+
+
 async def delete_attachment(
     db: AsyncSession,
     web_name: str,

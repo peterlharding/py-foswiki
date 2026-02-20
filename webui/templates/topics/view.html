@@ -44,4 +44,30 @@
   </table>
 </div>
 {% endif %}
+
+{% if attachments %}
+<div class="card" style="margin-top:1rem; padding:0;">
+  <div style="display:flex; align-items:center; padding:.75rem 1rem; border-bottom:1px solid var(--border);">
+    <h2 style="font-size:1rem; flex:1; margin:0;">📎 Attachments</h2>
+    <a href="/webs/{{ web }}/topics/{{ topic.name }}/attachments" class="btn btn-secondary btn-sm">Manage</a>
+  </div>
+  <table style="margin:0;">
+    <tbody>
+      {% for a in attachments %}
+      <tr>
+        <td style="font-weight:500;">
+          <a href="/webs/{{ web }}/topics/{{ topic.name }}/attachments/{{ a.filename }}">{{ a.filename }}</a>
+        </td>
+        <td style="color:var(--muted); font-size:.82rem; white-space:nowrap;">
+          {% if a.size_bytes < 1024 %}{{ a.size_bytes }} B
+          {% elif a.size_bytes < 1048576 %}{{ (a.size_bytes / 1024) | round(1) }} KB
+          {% else %}{{ (a.size_bytes / 1048576) | round(1) }} MB{% endif %}
+        </td>
+        <td style="color:var(--muted); font-size:.82rem;">{{ a.comment or '' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
 {% endblock %}

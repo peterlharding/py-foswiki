@@ -6,11 +6,13 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, Form, Request
+from fastapi.exceptions import HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
 from app.services import topics as topic_svc
+from app.services import attachments as att_svc
 from app.schemas import TopicCreate, TopicUpdate
 from app.services.renderer import RenderPipeline
 from app.core.config import get_settings
@@ -93,6 +95,10 @@ async def view_topic(
             rendered = await _pipeline(db).render(
                 web_name, topic_name, ver.content, current_user=user
             )
+        try:
+            attachments = await att_svc.list_attachments(db, web_name, topic_name)
+        except Exception:
+            attachments = []
         ctx = PageContext(title=f"{web_name}.{topic_name}", user=user, web=web_name, topic=topic_name)
         return templates.TemplateResponse("topics/view.html", {
             **ctx.to_dict(request),
@@ -100,13 +106,25 @@ async def view_topic(
             "topic": topic,
             "ver": ver,
             "rendered": rendered,
+            "attachments": attachments,
         })
+    except HTTPException as e:
+        if e.status_code == 404:
+            return RedirectResponse(
+                url=f"/webs/{web_name}/topics/new?name={topic_name}",
+                status_code=302,
+            )
+        ctx = PageContext(title="Error", user=user)
+        return templates.TemplateResponse("error.html", {
+            **ctx.to_dict(request),
+            "message": e.detail,
+        }, status_code=e.status_code)
     except Exception as e:
-        ctx = PageContext(title="Not Found", user=user)
+        ctx = PageContext(title="Error", user=user)
         return templates.TemplateResponse("error.html", {
             **ctx.to_dict(request),
             "message": str(e),
-        }, status_code=404)
+        }, status_code=500)
 
 
 # -----------------------------------------------------------------------------

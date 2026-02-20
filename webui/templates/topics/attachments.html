@@ -54,10 +54,27 @@
         <td style="color:var(--muted); font-size:.85rem; white-space:nowrap;">
           {{ a.uploaded_at.strftime('%Y-%m-%d %H:%M') if a.uploaded_at else '—' }}
         </td>
-        <td style="color:var(--muted); font-size:.85rem;">{{ a.comment or '—' }}</td>
+        <td style="font-size:.85rem;">
+          <span id="comment-text-{{ loop.index }}" style="color:var(--muted);">{{ a.comment or '—' }}</span>
+          <form id="comment-form-{{ loop.index }}"
+                method="post"
+                action="/webs/{{ web }}/topics/{{ topic_name }}/attachments/{{ a.filename }}/comment"
+                style="display:none; margin:0;">
+            <input name="comment" type="text" maxlength="512"
+                   value="{{ a.comment or '' }}"
+                   style="width:100%; font-size:.85rem; padding:.2rem .4rem;">
+            <div style="margin-top:.3rem; display:flex; gap:.4rem;">
+              <button type="submit" class="btn btn-primary btn-sm">Save</button>
+              <button type="button" class="btn btn-secondary btn-sm"
+                      onclick="toggleComment({{ loop.index }}, false)">Cancel</button>
+            </div>
+          </form>
+        </td>
         <td style="text-align:right; white-space:nowrap;">
           <a href="/webs/{{ web }}/topics/{{ topic_name }}/attachments/{{ a.filename }}"
              class="btn btn-secondary btn-sm" download>⬇ Download</a>
+          <button type="button" class="btn btn-secondary btn-sm"
+                  onclick="toggleComment({{ loop.index }}, true)">✏ Comment</button>
           <form method="post"
                 action="/webs/{{ web }}/topics/{{ topic_name }}/attachments/{{ a.filename }}/delete"
                 style="display:inline;"
@@ -75,4 +92,11 @@
   <p>No attachments yet.</p>
 </div>
 {% endif %}
+
+<script>
+function toggleComment(idx, show) {
+  document.getElementById('comment-text-' + idx).style.display = show ? 'none' : '';
+  document.getElementById('comment-form-' + idx).style.display = show ? '' : 'none';
+}
+</script>
 {% endblock %}

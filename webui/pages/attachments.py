@@ -131,6 +131,27 @@ async def download_attachment(
     )
 
 
+# ── Update comment ───────────────────────────────────────────────────────────
+
+@router.post("/webs/{web_name}/topics/{topic_name}/attachments/{filename}/comment")
+async def update_attachment_comment(
+    web_name: str,
+    topic_name: str,
+    filename: str,
+    request: Request,
+    comment: str = Form(default=""),
+    db: AsyncSession = Depends(get_db),
+):
+    user = await get_current_user(request)
+    if not user:
+        return RedirectResponse(url="/login", status_code=302)
+    await att_svc.update_comment(db, web_name, topic_name, filename, comment)
+    return RedirectResponse(
+        url=f"/webs/{web_name}/topics/{topic_name}/attachments",
+        status_code=302,
+    )
+
+
 # ── Delete ────────────────────────────────────────────────────────────────────
 
 @router.post("/webs/{web_name}/topics/{topic_name}/attachments/{filename}/delete")

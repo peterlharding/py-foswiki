@@ -17,6 +17,13 @@
 </div>
 {% endif %}
 
+{% if request.query_params.get('name') and not topic %}
+<div class="flash" style="background:var(--warning-bg, #fff3cd); border-color:var(--warning-border, #ffc107); color:#856404;">
+  Topic <strong>{{ request.query_params.get('name') }}</strong> does not exist yet.
+  Fill in the form below to create it.
+</div>
+{% endif %}
+
 {% if error %}
 <div class="flash error">{{ error }}</div>
 {% endif %}
@@ -28,7 +35,8 @@
     <label for="name">Topic name</label>
     <input id="name" name="name" type="text" required autofocus
            placeholder="e.g. WebHome, SandboxTest"
-           pattern="[A-Za-z][A-Za-z0-9]*">
+           pattern="[A-Za-z][A-Za-z0-9]*"
+           value="{{ request.query_params.get('name', '') }}">
     <div style="font-size:.8rem; color:var(--muted); margin-top:.25rem;">
       CamelCase recommended (e.g. MyNewTopic)
     </div>
