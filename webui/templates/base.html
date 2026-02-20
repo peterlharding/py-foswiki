@@ -207,6 +207,7 @@
     <a href="/webs/new">➕ New Web</a>
     <a href="/users" {% if request.url.path.startswith('/users') %}class="active"{% endif %}>👥 Manage Users</a>
     <a href="/register">➕ New User</a>
+    <a href="/groups" {% if request.url.path.startswith('/groups') %}class="active"{% endif %}>👥 WikiGroups</a>
     <a href="/forms" {% if request.url.path.startswith('/forms') %}class="active"{% endif %}>📋 Form Schemas</a>
     <a href="/admin/settings" {% if request.url.path.startswith('/admin') %}class="active"{% endif %}>⚙️ Site Settings</a>
     {% endif %}

@@ -42,6 +42,22 @@ PERMISSIONS = frozenset({"view", "edit", "create", "rename", "delete", "admin"})
 # Default-allow permissions (anything not in this set defaults to DENY)
 DEFAULT_ALLOW = frozenset({"view"})
 
+# Permission hierarchy: granting a higher permission implies all lower ones.
+# e.g. if a user has ALLOW edit, they implicitly have ALLOW view.
+_IMPLIED_BY: dict[str, frozenset[str]] = {
+    "view":   frozenset({"edit", "create", "rename", "delete", "admin"}),
+    "edit":   frozenset({"rename", "delete", "admin"}),
+    "create": frozenset({"admin"}),
+    "rename": frozenset({"admin"}),
+    "delete": frozenset({"admin"}),
+    "admin":  frozenset(),
+}
+
+
+def _expand_permission(permission: str) -> frozenset[str]:
+    """Return the set of permissions that imply *permission* (including itself)."""
+    return frozenset({permission}) | _IMPLIED_BY.get(permission, frozenset())
+
 
 # -----------------------------------------------------------------------------
 
@@ -101,9 +117,17 @@ def _eval_entries(
     Evaluate a list of ACL entries for a given permission and principal set.
     Returns True (allow), False (deny), or None (no matching rule).
     DENY takes precedence over ALLOW.
+
+    Permission hierarchy: an ALLOW on a higher permission implies the lower one.
+    e.g. ALLOW edit → implicitly ALLOW view.
+    DENY is never implied — only explicit DENY entries deny.
     """
+    implied = _expand_permission(permission)  # set of permissions that imply this one
+
+    # Explicit DENY on the exact permission only (DENY is never implied)
     denies = [e for e in entries if e.permission == permission and e.principal in principals and not e.allow]
-    allows = [e for e in entries if e.permission == permission and e.principal in principals and e.allow]
+    # ALLOW on the exact permission OR any higher permission that implies it
+    allows = [e for e in entries if e.permission in implied and e.principal in principals and e.allow]
     if denies:
         return False
     if allows:

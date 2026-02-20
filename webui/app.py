@@ -22,7 +22,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.core.config import get_settings
 from app.core.database import init_db
-from webui.pages import acl, admin, attachments, auth, forms, webs, topics, search, users
+from webui.pages import acl, admin, attachments, auth, forms, groups, webs, topics, search, users
 from webui.templating import templates
 
 
@@ -57,6 +57,7 @@ def create_webui() -> FastAPI:
     app.include_router(forms.router)
     app.include_router(attachments.router)
     app.include_router(acl.router)
+    app.include_router(groups.router)
 
     # ── Catch-all 404 ─────────────────────────────────────────────────────────
 

@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="breadcrumb">
+  <a href="/">Webs</a> / <a href="/groups">WikiGroups</a>
+  {% if not is_new %} / {{ group_name }}{% endif %}
+</div>
+<div class="page-header">
+  <h1>{% if is_new %}New Group{% else %}{{ group_name }}{% endif %}</h1>
+  <a href="/groups" class="btn btn-secondary btn-sm">← All Groups</a>
+</div>
+
+{% if error %}
+<div class="flash error">{{ error }}</div>
+{% endif %}
+
+{% if is_new %}
+{# ── Create form ──────────────────────────────────────────────────────────── #}
+<div class="card" style="max-width:560px;">
+  <h2 style="font-size:1rem; margin-bottom:.75rem;">Create Group</h2>
+  <form method="post" action="/groups/new">
+    <div class="form-group">
+      <label for="group_name">Group name <span style="color:var(--muted); font-size:.85rem;">(no spaces)</span></label>
+      <input id="group_name" name="group_name" type="text" required autofocus
+             pattern="[A-Za-z][A-Za-z0-9_\-]*"
+             placeholder="e.g. Editors, ReviewTeam"
+             value="{{ group_name }}">
+    </div>
+    <div class="form-group">
+      <label>Initial members <span style="color:var(--muted); font-size:.85rem;">(optional)</span></label>
+      <div style="max-height:220px; overflow-y:auto; border:1px solid var(--border); border-radius:4px; padding:.5rem;">
+        {% for u in all_users %}
+        <label style="display:flex; align-items:center; gap:.5rem; padding:.2rem 0; cursor:pointer;">
+          <input type="checkbox" name="initial_members" value="{{ u.username }}">
+          <span>{{ u.display_name or u.username }}</span>
+          <span style="color:var(--muted); font-size:.82rem;">@{{ u.username }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Create Group</button>
+  </form>
+</div>
+
+{% else %}
+{# ── Edit existing group ───────────────────────────────────────────────────── #}
+
+{# Members list #}
+<div class="card" style="margin-bottom:1rem; padding:0;">
+  <div style="display:flex; align-items:center; padding:.75rem 1rem; border-bottom:1px solid var(--border);">
+    <h2 style="font-size:1rem; flex:1; margin:0;">
+      Members
+      <span style="color:var(--muted); font-size:.85rem; font-weight:400;">({{ members | length }})</span>
+    </h2>
+  </div>
+  {% if members %}
+  <table style="margin:0;">
+    <tbody>
+      {% for m in members %}
+      <tr>
+        <td style="font-weight:500;">{{ m.display_name or m.username }}</td>
+        <td style="color:var(--muted); font-size:.85rem;">@{{ m.username }}</td>
+        <td style="color:var(--muted); font-size:.82rem;">{{ m.email }}</td>
+        <td style="text-align:right;">
+          <form method="post" action="/groups/{{ group_name }}/remove" style="display:inline;">
+            <input type="hidden" name="username" value="{{ m.username }}">
+            <button type="submit" class="btn btn-danger btn-sm"
+                    onclick="return confirm('Remove {{ m.username }} from {{ group_name }}?')">
+              Remove
+            </button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div style="padding:1rem; color:var(--muted); font-size:.9rem; text-align:center;">
+    No members yet.
+  </div>
+  {% endif %}
+</div>
+
+{# Add member #}
+<div class="card" style="max-width:480px; margin-bottom:1rem;">
+  <h2 style="font-size:1rem; margin-bottom:.75rem;">Add Member</h2>
+  <form method="post" action="/groups/{{ group_name }}/add" style="display:flex; gap:.5rem; align-items:flex-end;">
+    <div class="form-group" style="flex:1; margin:0;">
+      <select name="username" style="width:100%;">
+        {% for u in all_users %}
+        {% if u.username not in member_names %}
+        <option value="{{ u.username }}">{{ u.display_name or u.username }} (@{{ u.username }})</option>
+        {% endif %}
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Add</button>
+  </form>
+</div>
+
+{# Rename + Delete #}
+<div style="display:flex; gap:1rem; flex-wrap:wrap;">
+  <div class="card" style="flex:1; min-width:260px;">
+    <h2 style="font-size:1rem; margin-bottom:.75rem;">Rename Group</h2>
+    <form method="post" action="/groups/{{ group_name }}/rename"
+          style="display:flex; gap:.5rem; align-items:flex-end;">
+      <div class="form-group" style="flex:1; margin:0;">
+        <input name="new_name" type="text" value="{{ group_name }}"
+               pattern="[A-Za-z][A-Za-z0-9_\-]*" required style="width:100%;">
+      </div>
+      <button type="submit" class="btn btn-secondary">Rename</button>
+    </form>
+  </div>
+
+  <div class="card" style="flex:1; min-width:260px;">
+    <h2 style="font-size:1rem; margin-bottom:.75rem;">Delete Group</h2>
+    <p style="color:var(--muted); font-size:.88rem; margin-bottom:.75rem;">
+      Removes this group from all {{ members | length }} member{{ 's' if members | length != 1 }}.
+      ACL entries referencing <code>group:{{ group_name }}</code> will no longer match anyone.
+    </p>
+    <form method="post" action="/groups/{{ group_name }}/delete"
+          onsubmit="return confirm('Delete group {{ group_name }}? This cannot be undone.')">
+      <button type="submit" class="btn btn-danger">Delete Group</button>
+    </form>
+  </div>
+</div>
+
+{% endif %}
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="breadcrumb">
+  <a href="/">Webs</a> / WikiGroups
+</div>
+<div class="page-header">
+  <h1>WikiGroups</h1>
+  <a href="/groups/new" class="btn btn-primary btn-sm">+ New Group</a>
+</div>
+
+{% if letters %}
+<div style="margin-bottom:1rem; font-size:.95rem;">
+  {% for letter in letters %}
+  <a href="#letter-{{ letter }}" style="margin-right:.6rem; font-weight:600;">{{ letter }}</a>
+  {% endfor %}
+</div>
+
+{% for letter in letters %}
+<div id="letter-{{ letter }}" style="margin-bottom:1.5rem;">
+  <h2 style="font-size:1.1rem; border-bottom:2px solid var(--border); padding-bottom:.25rem; margin-bottom:.6rem;">
+    {{ letter }}
+  </h2>
+  <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr)); gap:.4rem .75rem;">
+    {% for name, count in by_letter[letter] | sort(attribute=0) %}
+    <div>
+      <a href="/groups/{{ name }}" style="font-weight:500;">{{ name }}</a>
+      <span style="color:var(--muted); font-size:.82rem;">({{ count }} member{{ 's' if count != 1 }})</span>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endfor %}
+
+<p style="color:var(--muted); font-size:.88rem; margin-top:1rem;">{{ total }} group{{ 's' if total != 1 }} found</p>
+
+{% else %}
+<div class="empty-state">
+  <p>No groups yet. <a href="/groups/new">Create the first group</a>.</p>
+</div>
+{% endif %}
+{% endblock %}
