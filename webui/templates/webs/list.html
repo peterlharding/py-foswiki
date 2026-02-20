@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-header">
+  <h1>Webs</h1>
+  {% if user.is_admin %}
+  <a href="/webs/new" class="btn btn-primary btn-sm">+ New Web</a>
+  {% endif %}
+</div>
+
+{% if webs %}
+<div class="card" style="padding:0;">
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for web in webs %}
+      <tr>
+        <td><a href="/webs/{{ web.name }}" style="font-weight:500;">{{ web.name }}</a></td>
+        <td style="color:var(--muted);">{{ web.description or '—' }}</td>
+        <td style="text-align:right;">
+          <a href="/webs/{{ web.name }}/topics/new" class="btn btn-secondary btn-sm">+ Topic</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">
+  <p>No webs yet.</p>
+  {% if user.is_admin %}
+  <a href="/webs/new" class="btn btn-primary">Create the first web</a>
+  {% endif %}
+</div>
+{% endif %}
+{% endblock %}

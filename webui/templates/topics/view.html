@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="breadcrumb">
+  <a href="/">Webs</a> / <a href="/webs/{{ web }}">{{ web }}</a> / {{ topic.name }}
+</div>
+<div class="page-header">
+  <h1>{{ topic.name }}</h1>
+  <a href="/webs/{{ web }}/topics/{{ topic.name }}/edit" class="btn btn-secondary btn-sm">Edit</a>
+  <a href="/webs/{{ web }}/topics/{{ topic.name }}/raw" class="btn btn-secondary btn-sm">Raw</a>
+  <a href="/webs/{{ web }}/topics/{{ topic.name }}/attachments" class="btn btn-secondary btn-sm">📎 Attachments</a>
+  <a href="/webs/{{ web }}/topics/{{ topic.name }}/history" class="btn btn-secondary btn-sm">History</a>
+  <form method="post" action="/webs/{{ web }}/topics/{{ topic.name }}/delete" style="display:inline;"
+        onsubmit="return confirm('Delete {{ topic.name }}? This cannot be undone.')">
+    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+  </form>
+</div>
+<div style="font-size:.8rem; color:var(--muted); margin-bottom:1rem;">
+  Revision r{{ ver.version }}
+  {% if ver.created_at %} · {{ ver.created_at.strftime('%Y-%m-%d %H:%M') }}{% endif %}
+  {% if ver.comment %} · <em>{{ ver.comment }}</em>{% endif %}
+</div>
+
+<div class="card topic-body">
+  {{ rendered | safe }}
+</div>
+
+{% if topic.form_schema %}
+<div class="card" style="margin-top:1rem;">
+  <div style="display:flex; align-items:center; margin-bottom:.75rem;">
+    <h2 style="font-size:1rem; flex:1;">📋 {{ topic.form_schema.name }}</h2>
+    <a href="/webs/{{ web }}/topics/{{ topic.name }}/form" class="btn btn-secondary btn-sm">Edit fields</a>
+  </div>
+  {% set meta = {} %}
+  {% for m in topic.meta %}{% set _ = meta.update({m.key: m.value}) %}{% endfor %}
+  <table>
+    <tbody>
+      {% for f in topic.form_schema.fields %}
+      <tr>
+        <td style="color:var(--muted); width:180px; font-size:.88rem;">{{ f.label }}</td>
+        <td style="font-size:.9rem;">{{ meta.get(f.name, '—') or '—' }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+{% endblock %}

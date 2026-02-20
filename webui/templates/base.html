@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }} — PyFoswiki</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #f5f6fa;
+      --surface:   #ffffff;
+      --border:    #dde1ea;
+      --primary:   #2563eb;
+      --primary-h: #1d4ed8;
+      --danger:    #dc2626;
+      --success:   #16a34a;
+      --warning:   #d97706;
+      --text:      #1e293b;
+      --muted:     #64748b;
+      --sidebar-w: 220px;
+      --header-h:  52px;
+    }
+
+    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* ── Header ── */
+    header {
+      position: fixed; top: 0; left: 0; right: 0; height: var(--header-h);
+      background: var(--primary); color: #fff;
+      display: flex; align-items: center; padding: 0 1rem; gap: 1rem;
+      z-index: 100; box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    }
+    header .brand { font-weight: 700; font-size: 1.1rem; text-decoration: none; color: #fff; }
+    header .spacer { flex: 1; }
+    header form.search-form { display: flex; gap: .4rem; }
+    header form.search-form input {
+      padding: .3rem .6rem; border-radius: 4px; border: none;
+      font-size: .9rem; width: 220px;
+    }
+    header form.search-form button {
+      padding: .3rem .7rem; border-radius: 4px; border: none;
+      background: rgba(255,255,255,.2); color: #fff; cursor: pointer;
+    }
+    header form.search-form button:hover { background: rgba(255,255,255,.35); }
+    header nav a {
+      color: rgba(255,255,255,.85); text-decoration: none; font-size: .9rem; padding: .25rem .5rem;
+      border-radius: 4px;
+    }
+    header nav a:hover { background: rgba(255,255,255,.15); color: #fff; }
+    header .user-info { font-size: .85rem; color: rgba(255,255,255,.8); }
+
+    /* ── Sidebar ── */
+    .layout { display: flex; margin-top: var(--header-h); min-height: calc(100vh - var(--header-h)); }
+    aside {
+      width: var(--sidebar-w); flex-shrink: 0;
+      background: var(--surface); border-right: 1px solid var(--border);
+      padding: 1rem 0; position: sticky; top: var(--header-h);
+      height: calc(100vh - var(--header-h)); overflow-y: auto;
+    }
+    aside .section-label {
+      font-size: .7rem; font-weight: 600; text-transform: uppercase;
+      letter-spacing: .06em; color: var(--muted); padding: .6rem 1rem .2rem;
+    }
+    aside a {
+      display: block; padding: .4rem 1rem; color: var(--text);
+      text-decoration: none; font-size: .9rem; border-left: 3px solid transparent;
+    }
+    aside a:hover { background: var(--bg); color: var(--primary); }
+    aside a.active { border-left-color: var(--primary); color: var(--primary); background: #eff6ff; font-weight: 500; }
+
+    /* ── Main content ── */
+    main { flex: 1; padding: 1.5rem 2rem; max-width: 960px; }
+
+    /* ── Flash messages ── */
+    .flash {
+      padding: .7rem 1rem; border-radius: 6px; margin-bottom: 1rem;
+      font-size: .9rem; border: 1px solid transparent;
+    }
+    .flash.info    { background: #eff6ff; border-color: #bfdbfe; color: #1e40af; }
+    .flash.success { background: #f0fdf4; border-color: #bbf7d0; color: #166534; }
+    .flash.error   { background: #fef2f2; border-color: #fecaca; color: #991b1b; }
+    .flash.warning { background: #fffbeb; border-color: #fde68a; color: #92400e; }
+
+    /* ── Cards ── */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; margin-bottom: 1rem; }
+    .card h2 { font-size: 1rem; margin-bottom: .75rem; color: var(--text); }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-block; padding: .45rem .9rem; border-radius: 6px;
+      font-size: .9rem; font-weight: 500; cursor: pointer; text-decoration: none;
+      border: 1px solid transparent; transition: background .15s;
+    }
+    .btn-primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .btn-primary:hover { background: var(--primary-h); }
+    .btn-secondary { background: var(--surface); color: var(--text); border-color: var(--border); }
+    .btn-secondary:hover { background: var(--bg); }
+    .btn-danger { background: var(--danger); color: #fff; border-color: var(--danger); }
+    .btn-sm { padding: .25rem .6rem; font-size: .8rem; }
+
+    /* ── Forms ── */
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-size: .85rem; font-weight: 500; margin-bottom: .3rem; color: var(--text); }
+    .form-group input, .form-group textarea, .form-group select {
+      width: 100%; padding: .5rem .75rem; border: 1px solid var(--border);
+      border-radius: 6px; font-size: .95rem; font-family: inherit;
+      background: var(--surface); color: var(--text);
+    }
+    .form-group input:focus, .form-group textarea:focus {
+      outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,.15);
+    }
+    .form-group textarea { resize: vertical; min-height: 120px; }
+    .form-error { color: var(--danger); font-size: .85rem; margin-top: .3rem; }
+
+    /* ── Tables ── */
+    table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+    th { text-align: left; padding: .5rem .75rem; border-bottom: 2px solid var(--border); color: var(--muted); font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; }
+    td { padding: .55rem .75rem; border-bottom: 1px solid var(--border); }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: var(--bg); }
+
+    /* ── Topic rendered content ── */
+    .topic-body { line-height: 1.7; }
+    .topic-body h1, .topic-body h2, .topic-body h3 { margin: 1.2rem 0 .5rem; }
+    .topic-body p { margin-bottom: .8rem; }
+    .topic-body pre { background: #f1f5f9; padding: .75rem 1rem; border-radius: 6px; overflow-x: auto; margin-bottom: .8rem; }
+    .topic-body code { font-family: 'Fira Code', monospace; font-size: .88em; background: #f1f5f9; padding: .1em .3em; border-radius: 3px; }
+    .topic-body pre code { background: none; padding: 0; }
+    .topic-body a { color: var(--primary); }
+    .topic-body ul, .topic-body ol { margin: .5rem 0 .8rem 1.5rem; }
+    .topic-body blockquote { border-left: 3px solid var(--border); padding-left: 1rem; color: var(--muted); margin: .8rem 0; }
+    .topic-body table { margin-bottom: .8rem; }
+
+    /* ── Page header row ── */
+    .page-header { display: flex; align-items: center; gap: .75rem; margin-bottom: 1.25rem; }
+    .page-header h1 { font-size: 1.4rem; flex: 1; }
+    .breadcrumb { font-size: .85rem; color: var(--muted); margin-bottom: .5rem; }
+    .breadcrumb a { color: var(--primary); text-decoration: none; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    /* ── Editor ── */
+    .editor-toolbar { display: flex; gap: .5rem; margin-bottom: .5rem; flex-wrap: wrap; }
+    textarea.code-editor {
+      font-family: 'Fira Code', 'Cascadia Code', monospace;
+      font-size: .9rem; min-height: 400px; tab-size: 2;
+    }
+
+    /* ── Empty state ── */
+    .empty-state { text-align: center; padding: 3rem 1rem; color: var(--muted); }
+    .empty-state p { margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="brand" href="/">🌿 PyFoswiki</a>
+  <div class="spacer"></div>
+  {% if user %}
+  <form class="search-form" method="get" action="/search">
+    <input type="search" name="q" placeholder="Search…" value="{{ request.query_params.get('q', '') }}">
+    <button type="submit">Go</button>
+  </form>
+  <nav>
+    <a href="/">Webs</a>
+  </nav>
+  <span class="user-info">{{ user.display_name or user.username }}</span>
+  <nav>
+    <a href="/logout">Sign out</a>
+  </nav>
+  {% endif %}
+</header>
+
+<div class="layout">
+  {% if user %}
+  <aside>
+    <div class="section-label">Navigation</div>
+    <a href="/" {% if request.url.path == '/' %}class="active"{% endif %}>🏠 Home</a>
+    <a href="/search" {% if request.url.path == '/search' %}class="active"{% endif %}>🔍 Search</a>
+
+    {% if ctx.web %}
+    <div class="section-label">{{ ctx.web }}</div>
+    <a href="/webs/{{ ctx.web }}">📂 Topics</a>
+    <a href="/webs/{{ ctx.web }}/topics/new">✏️ New Topic</a>
+    {% if ctx.topic %}
+    <a href="/webs/{{ ctx.web }}/topics/{{ ctx.topic }}" {% if request.url.path.endswith(ctx.topic) %}class="active"{% endif %}>📄 View</a>
+    <a href="/webs/{{ ctx.web }}/topics/{{ ctx.topic }}/edit">✏️ Edit</a>
+    <a href="/webs/{{ ctx.web }}/topics/{{ ctx.topic }}/raw">🔤 Raw</a>
+    <a href="/webs/{{ ctx.web }}/topics/{{ ctx.topic }}/history">🕐 History</a>
+    <a href="/webs/{{ ctx.web }}/topics/{{ ctx.topic }}/attachments">📎 Attachments</a>
+    <a href="/webs/{{ ctx.web }}/topics/{{ ctx.topic }}/form">📋 DataForm</a>
+    {% endif %}
+    {% endif %}
+
+    <div class="section-label">Account</div>
+    <a href="/profile" {% if request.url.path == '/profile' %}class="active"{% endif %}>👤 My Profile</a>
+    <a href="/profile/password" {% if request.url.path == '/profile/password' %}class="active"{% endif %}>🔑 Change Password</a>
+
+    {% if user.is_admin %}
+    <div class="section-label">Admin</div>
+    <a href="/webs/new">➕ New Web</a>
+    <a href="/users" {% if request.url.path.startswith('/users') %}class="active"{% endif %}>👥 Manage Users</a>
+    <a href="/register">➕ New User</a>
+    <a href="/forms" {% if request.url.path.startswith('/forms') %}class="active"{% endif %}>📋 Form Schemas</a>
+    <a href="/admin/settings" {% if request.url.path.startswith('/admin') %}class="active"{% endif %}>⚙️ Site Settings</a>
+    {% endif %}
+  </aside>
+  {% endif %}
+
+  <main>
+    {% if flash %}
+    <div class="flash {{ flash_type }}">{{ flash }}</div>
+    {% endif %}
+    {% block content %}{% endblock %}
+  </main>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="breadcrumb">
+  <a href="/">Webs</a> / <a href="/webs/{{ web }}">{{ web }}</a> /
+  <a href="/webs/{{ web }}/topics/{{ topic.name }}">{{ topic.name }}</a> / Raw
+</div>
+<div class="page-header">
+  <h1>Raw source — {{ topic.name }}</h1>
+  <a href="/webs/{{ web }}/topics/{{ topic.name }}/edit" class="btn btn-secondary btn-sm">Edit</a>
+  <a href="/webs/{{ web }}/topics/{{ topic.name }}" class="btn btn-secondary btn-sm">View rendered</a>
+</div>
+<div style="font-size:.8rem; color:var(--muted); margin-bottom:1rem;">
+  Revision r{{ ver.version }}
+  {% if ver.created_at %} · {{ ver.created_at.strftime('%Y-%m-%d %H:%M') }}{% endif %}
+  {% if ver.comment %} · <em>{{ ver.comment }}</em>{% endif %}
+</div>
+
+<div class="card" style="padding:0;">
+  <pre style="margin:0; padding:1.25rem; overflow-x:auto; font-family:'Fira Code','Cascadia Code',monospace; font-size:.88rem; line-height:1.6; white-space:pre-wrap; word-break:break-word;">{{ ver.content }}</pre>
+</div>
+{% endblock %}

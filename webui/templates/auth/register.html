@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+{% set admin_creating = user and user.is_admin %}
+<div style="max-width:420px; {% if not admin_creating %}margin:3rem auto;{% endif %}">
+  <div class="card">
+    <h1 style="font-size:1.3rem; margin-bottom:1.25rem;">
+      {{ 'Create New User' if admin_creating else 'Create an account' }}
+    </h1>
+    {% if error %}
+    <div class="flash error">{{ error }}</div>
+    {% endif %}
+    <form method="post" action="/register">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input id="username" name="username" type="text" autocomplete="off" autofocus required minlength="2" maxlength="64">
+      </div>
+      <div class="form-group">
+        <label for="display_name">Display name <span style="color:var(--muted)">(optional)</span></label>
+        <input id="display_name" name="display_name" type="text" maxlength="128">
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" autocomplete="off" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" autocomplete="new-password" required minlength="8">
+      </div>
+      {% if admin_creating %}
+      <div class="form-group" style="display:flex; align-items:center; gap:.6rem; margin-bottom:1rem;">
+        <input id="make_admin" name="make_admin" type="checkbox" value="1" style="width:auto;">
+        <label for="make_admin" style="margin:0; font-weight:normal;">Grant admin privileges</label>
+      </div>
+      {% endif %}
+      <button type="submit" class="btn btn-primary" style="width:100%;">
+        {{ 'Create user' if admin_creating else 'Create account' }}
+      </button>
+    </form>
+    {% if not admin_creating %}
+    <p style="margin-top:1rem; font-size:.85rem; color:var(--muted); text-align:center;">
+      Already have an account? <a href="/login">Sign in</a>
+    </p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

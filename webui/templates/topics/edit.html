@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+{% if topic %}
+<div class="breadcrumb">
+  <a href="/">Webs</a> / <a href="/webs/{{ web }}">{{ web }}</a> /
+  <a href="/webs/{{ web }}/topics/{{ topic.name }}">{{ topic.name }}</a> / Edit
+</div>
+<div class="page-header">
+  <h1>Edit {{ topic.name }}</h1>
+</div>
+{% else %}
+<div class="breadcrumb">
+  <a href="/">Webs</a> / <a href="/webs/{{ web }}">{{ web }}</a> / New Topic
+</div>
+<div class="page-header">
+  <h1>New Topic in {{ web }}</h1>
+</div>
+{% endif %}
+
+{% if error %}
+<div class="flash error">{{ error }}</div>
+{% endif %}
+
+{% set action = "/webs/" ~ web ~ "/topics/" ~ (topic.name if topic else "new") ~ "/edit" if topic else "/webs/" ~ web ~ "/topics/new" %}
+<form method="post" action="{{ action }}">
+  {% if not topic %}
+  <div class="form-group">
+    <label for="name">Topic name</label>
+    <input id="name" name="name" type="text" required autofocus
+           placeholder="e.g. WebHome, SandboxTest"
+           pattern="[A-Za-z][A-Za-z0-9]*">
+    <div style="font-size:.8rem; color:var(--muted); margin-top:.25rem;">
+      CamelCase recommended (e.g. MyNewTopic)
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="form-group">
+    <label for="content">Content <span style="color:var(--muted); font-size:.8rem;">(Markdown / TML)</span></label>
+    <textarea id="content" name="content" class="code-editor" autofocus>{{ ver.content if ver else '' }}</textarea>
+  </div>
+
+  <div class="form-group">
+    <label for="comment">Edit summary <span style="color:var(--muted)">(optional)</span></label>
+    <input id="comment" name="comment" type="text" maxlength="512" placeholder="Brief description of changes">
+  </div>
+
+  <div style="display:flex; gap:.75rem; align-items:center;">
+    <button type="submit" class="btn btn-primary">Save</button>
+    {% if topic %}
+    <a href="/webs/{{ web }}/topics/{{ topic.name }}" class="btn btn-secondary">Cancel</a>
+    {% else %}
+    <a href="/webs/{{ web }}" class="btn btn-secondary">Cancel</a>
+    {% endif %}
+    {% if topic %}
+    <span style="font-size:.8rem; color:var(--muted); margin-left:auto;">
+      Currently r{{ ver.version }}
+    </span>
+    {% endif %}
+  </div>
+</form>
+{% endblock %}

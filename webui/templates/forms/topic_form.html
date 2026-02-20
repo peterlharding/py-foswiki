@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="breadcrumb">
+  <a href="/">Webs</a> / <a href="/webs/{{ web }}">{{ web }}</a> /
+  <a href="/webs/{{ web }}/topics/{{ topic.name }}">{{ topic.name }}</a> / Form
+</div>
+<div class="page-header">
+  <h1>DataForm — {{ topic.name }}</h1>
+</div>
+
+{% if error %}<div class="flash error">{{ error }}</div>{% endif %}
+{% if success %}<div class="flash success">{{ success }}</div>{% endif %}
+
+<form method="post" action="/webs/{{ web }}/topics/{{ topic.name }}/form">
+
+  <div class="card" style="max-width:560px; margin-bottom:1rem;">
+    <h2 style="margin-bottom:.75rem;">Attached form</h2>
+    <div class="form-group">
+      <label for="schema_id">Form schema</label>
+      <select id="schema_id" name="schema_id" onchange="this.form.submit()">
+        <option value="">— None —</option>
+        {% for s in schemas %}
+        <option value="{{ s.id }}"
+          {{ 'selected' if current_schema and current_schema.id == s.id }}>
+          {{ s.name }}{% if s.web %} ({{ s.web.name }}){% else %} (global){% endif %}
+        </option>
+        {% endfor %}
+      </select>
+    </div>
+    <p style="font-size:.8rem; color:var(--muted);">
+      Selecting a schema auto-submits to load its fields below.
+    </p>
+  </div>
+
+  {% if current_schema %}
+  <div class="card" style="max-width:560px; margin-bottom:1rem;">
+    <h2 style="margin-bottom:.75rem;">{{ current_schema.name }} fields</h2>
+    {% for f in current_schema.fields %}
+    <div class="form-group">
+      <label for="field_{{ f.name }}">
+        {{ f.label }}
+        {% if f.is_required %}<span style="color:var(--danger);">*</span>{% endif %}
+        <span style="color:var(--muted); font-size:.75rem; font-weight:normal;">({{ f.field_type }})</span>
+      </label>
+
+      {% set val = values.get(f.name, f.default_value) %}
+
+      {% if f.field_type == 'textarea' %}
+        <textarea id="field_{{ f.name }}" name="field_{{ f.name }}"
+                  {{ 'required' if f.is_required }}>{{ val }}</textarea>
+
+      {% elif f.field_type == 'select' %}
+        <select id="field_{{ f.name }}" name="field_{{ f.name }}" {{ 'required' if f.is_required }}>
+          <option value="">— select —</option>
+          {% for opt in f.options_list() %}
+          <option value="{{ opt }}" {{ 'selected' if val == opt }}>{{ opt }}</option>
+          {% endfor %}
+        </select>
+
+      {% elif f.field_type == 'multiselect' %}
+        <select id="field_{{ f.name }}" name="field_{{ f.name }}" multiple size="4">
+          {% set selected_vals = val.split(',') %}
+          {% for opt in f.options_list() %}
+          <option value="{{ opt }}" {{ 'selected' if opt.strip() in selected_vals }}>{{ opt }}</option>
+          {% endfor %}
+        </select>
+
+      {% elif f.field_type == 'checkbox' %}
+        <div style="display:flex; align-items:center; gap:.5rem; margin-top:.25rem;">
+          <input id="field_{{ f.name }}" name="field_{{ f.name }}" type="checkbox"
+                 value="1" {{ 'checked' if val == '1' }} style="width:auto;">
+          <label for="field_{{ f.name }}" style="margin:0; font-weight:normal;">Yes</label>
+        </div>
+
+      {% elif f.field_type == 'number' %}
+        <input id="field_{{ f.name }}" name="field_{{ f.name }}" type="number"
+               value="{{ val }}" {{ 'required' if f.is_required }}>
+
+      {% elif f.field_type == 'date' %}
+        <input id="field_{{ f.name }}" name="field_{{ f.name }}" type="date"
+               value="{{ val }}" {{ 'required' if f.is_required }}>
+
+      {% elif f.field_type == 'url' %}
+        <input id="field_{{ f.name }}" name="field_{{ f.name }}" type="url"
+               value="{{ val }}" {{ 'required' if f.is_required }}>
+
+      {% elif f.field_type == 'email' %}
+        <input id="field_{{ f.name }}" name="field_{{ f.name }}" type="email"
+               value="{{ val }}" {{ 'required' if f.is_required }}>
+
+      {% else %}
+        <input id="field_{{ f.name }}" name="field_{{ f.name }}" type="text"
+               value="{{ val }}" {{ 'required' if f.is_required }}>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+  <div style="display:flex; gap:.75rem;">
+    <button type="submit" class="btn btn-primary">Save form data</button>
+    <a href="/webs/{{ web }}/topics/{{ topic.name }}" class="btn btn-secondary">Cancel</a>
+  </div>
+  {% else %}
+  <div style="display:flex; gap:.75rem;">
+    <button type="submit" class="btn btn-secondary">Remove form</button>
+    <a href="/webs/{{ web }}/topics/{{ topic.name }}" class="btn btn-secondary">Cancel</a>
+  </div>
+  {% endif %}
+
+</form>
+{% endblock %}

@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% block content %}
+{% if schema %}
+<div class="breadcrumb"><a href="/forms">Form Schemas</a> / {{ schema.name }}</div>
+<div class="page-header"><h1>Edit {{ schema.name }}</h1></div>
+{% else %}
+<div class="breadcrumb"><a href="/forms">Form Schemas</a> / New</div>
+<div class="page-header"><h1>New Form Schema</h1></div>
+{% endif %}
+
+{% if error %}<div class="flash error">{{ error }}</div>{% endif %}
+{% if success %}<div class="flash success">{{ success }}</div>{% endif %}
+
+{% set action = "/forms/" ~ schema.id ~ "/edit" if schema else "/forms/new" %}
+<form method="post" action="{{ action }}" id="schema-form">
+
+  <div class="card" style="max-width:640px; margin-bottom:1rem;">
+    <h2 style="margin-bottom:.75rem;">Schema details</h2>
+    <div class="form-group">
+      <label for="name">Schema name</label>
+      {% if schema %}
+      <input type="text" value="{{ schema.name }}" disabled style="background:var(--bg); color:var(--muted);">
+      {% else %}
+      <input id="name" name="name" type="text" required autofocus
+             placeholder="e.g. BugReport, MeetingMinutes"
+             pattern="[A-Za-z][A-Za-z0-9_\- ]*">
+      {% endif %}
+    </div>
+    <div class="form-group">
+      <label for="description">Description <span style="color:var(--muted)">(optional)</span></label>
+      <input id="description" name="description" type="text"
+             value="{{ schema.description if schema else '' }}" maxlength="1000">
+    </div>
+    {% if not schema %}
+    <div class="form-group">
+      <label for="web_name">Scope</label>
+      <select id="web_name" name="web_name">
+        <option value="">🌐 Global (all webs)</option>
+        {% for w in webs %}
+        <option value="{{ w.name }}">{{ w.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="card" style="max-width:900px; margin-bottom:1rem;">
+    <div style="display:flex; align-items:center; margin-bottom:.75rem;">
+      <h2 style="flex:1;">Fields</h2>
+      <button type="button" class="btn btn-secondary btn-sm" onclick="addField()">+ Add field</button>
+    </div>
+
+    <div id="fields-container">
+      {% set existing = schema.fields if schema else [] %}
+      {% for f in existing %}
+      <div class="field-row" style="display:grid; grid-template-columns:1fr 1fr 120px 1fr 80px 60px auto; gap:.5rem; align-items:start; margin-bottom:.5rem; padding:.5rem; background:var(--bg); border-radius:6px;">
+        <div>
+          <label style="font-size:.75rem; color:var(--muted);">Name (key)</label>
+          <input name="field_name_{{ loop.index0 }}" type="text" value="{{ f.name }}" required placeholder="fieldName">
+        </div>
+        <div>
+          <label style="font-size:.75rem; color:var(--muted);">Label</label>
+          <input name="field_label_{{ loop.index0 }}" type="text" value="{{ f.label }}" required placeholder="Display label">
+        </div>
+        <div>
+          <label style="font-size:.75rem; color:var(--muted);">Type</label>
+          <select name="field_type_{{ loop.index0 }}">
+            {% for t in ['text','textarea','number','date','select','multiselect','checkbox','url','email'] %}
+            <option value="{{ t }}" {{ 'selected' if f.field_type == t }}>{{ t }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div>
+          <label style="font-size:.75rem; color:var(--muted);">Options (comma-sep, for select)</label>
+          <input name="field_options_{{ loop.index0 }}" type="text" value="{{ f.options }}" placeholder="Option A, Option B">
+        </div>
+        <div>
+          <label style="font-size:.75rem; color:var(--muted);">Default</label>
+          <input name="field_default_{{ loop.index0 }}" type="text" value="{{ f.default_value }}">
+        </div>
+        <div style="text-align:center;">
+          <label style="font-size:.75rem; color:var(--muted);">Required</label>
+          <input name="field_required_{{ loop.index0 }}" type="checkbox" value="1" {{ 'checked' if f.is_required }} style="width:auto; display:block; margin:.4rem auto 0;">
+        </div>
+        <div style="padding-top:1.4rem;">
+          <button type="button" class="btn btn-danger btn-sm" onclick="this.closest('.field-row').remove(); renumber()">✕</button>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div style="display:flex; gap:.75rem;">
+    <button type="submit" class="btn btn-primary">Save schema</button>
+    <a href="/forms" class="btn btn-secondary">Cancel</a>
+  </div>
+</form>
+
+<script>
+let fieldCount = {{ schema.fields | length if schema else 0 }};
+
+function addField() {
+  const i = fieldCount++;
+  const types = ['text','textarea','number','date','select','multiselect','checkbox','url','email'];
+  const opts = types.map(t => `<option value="${t}">${t}</option>`).join('');
+  const row = document.createElement('div');
+  row.className = 'field-row';
+  row.style.cssText = 'display:grid;grid-template-columns:1fr 1fr 120px 1fr 80px 60px auto;gap:.5rem;align-items:start;margin-bottom:.5rem;padding:.5rem;background:var(--bg);border-radius:6px;';
+  row.innerHTML = `
+    <div><label style="font-size:.75rem;color:var(--muted);">Name (key)</label>
+      <input name="field_name_${i}" type="text" required placeholder="fieldName"></div>
+    <div><label style="font-size:.75rem;color:var(--muted);">Label</label>
+      <input name="field_label_${i}" type="text" required placeholder="Display label"></div>
+    <div><label style="font-size:.75rem;color:var(--muted);">Type</label>
+      <select name="field_type_${i}">${opts}</select></div>
+    <div><label style="font-size:.75rem;color:var(--muted);">Options (comma-sep)</label>
+      <input name="field_options_${i}" type="text" placeholder="Option A, Option B"></div>
+    <div><label style="font-size:.75rem;color:var(--muted);">Default</label>
+      <input name="field_default_${i}" type="text"></div>
+    <div style="text-align:center;"><label style="font-size:.75rem;color:var(--muted);">Required</label>
+      <input name="field_required_${i}" type="checkbox" value="1" style="width:auto;display:block;margin:.4rem auto 0;"></div>
+    <div style="padding-top:1.4rem;">
+      <button type="button" class="btn btn-danger btn-sm" onclick="this.closest('.field-row').remove();renumber()">✕</button></div>`;
+  document.getElementById('fields-container').appendChild(row);
+}
+
+function renumber() {
+  document.querySelectorAll('.field-row').forEach((row, i) => {
+    row.querySelectorAll('[name]').forEach(el => {
+      el.name = el.name.replace(/_\d+$/, `_${i}`);
+    });
+  });
+  fieldCount = document.querySelectorAll('.field-row').length;
+}
+</script>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-header">
+  <h1>Site Settings</h1>
+</div>
+
+{% if success %}<div class="flash success">{{ success }}</div>{% endif %}
+
+<div class="card" style="max-width:600px;">
+  <h2 style="margin-bottom:1rem;">User Registration</h2>
+  <div style="display:flex; align-items:center; justify-content:space-between; gap:1rem;">
+    <div>
+      <div style="font-weight:500;">Public registration</div>
+      <div style="font-size:.85rem; color:var(--muted); margin-top:.2rem;">
+        {% if settings.allow_registration %}
+          Anyone can create an account via the registration page.
+        {% else %}
+          Registration is closed. Only admins can create new accounts.
+        {% endif %}
+      </div>
+    </div>
+    <form method="post" action="/admin/settings/toggle-registration">
+      <button type="submit" class="btn {{ 'btn-danger' if settings.allow_registration else 'btn-primary' }}">
+        {{ 'Disable registration' if settings.allow_registration else 'Enable registration' }}
+      </button>
+    </form>
+  </div>
+</div>
+
+<div class="card" style="max-width:600px; margin-top:1rem;">
+  <h2 style="margin-bottom:1rem;">Current configuration</h2>
+  <table>
+    <tbody>
+      <tr><td style="color:var(--muted); width:220px;">Site name</td><td>{{ settings.site_name }}</td></tr>
+      <tr><td style="color:var(--muted);">Environment</td><td>{{ settings.environment }}</td></tr>
+      <tr><td style="color:var(--muted);">Default web</td><td>{{ settings.default_web }}</td></tr>
+      <tr><td style="color:var(--muted);">Admin email</td><td>{{ settings.admin_email }}</td></tr>
+      <tr><td style="color:var(--muted);">Token expiry</td><td>{{ settings.access_token_expire_minutes // 60 }}h</td></tr>
+      <tr><td style="color:var(--muted);">Max attachment</td><td>{{ (settings.max_attachment_bytes // 1024 // 1024) }}MB</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:.8rem; color:var(--muted); margin-top:.75rem;">
+    Other settings are configured via <code>.env</code> and require a server restart to take effect.
+  </p>
+</div>
+{% endblock %}

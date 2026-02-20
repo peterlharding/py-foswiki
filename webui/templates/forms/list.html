@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-header">
+  <h1>Form Schemas</h1>
+  <a href="/forms/new" class="btn btn-primary btn-sm">+ New Schema</a>
+</div>
+
+{% if schemas %}
+<div class="card" style="padding:0;">
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Scope</th>
+        <th>Fields</th>
+        <th>Description</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in schemas %}
+      <tr>
+        <td style="font-weight:500;">{{ s.name }}</td>
+        <td style="color:var(--muted); font-size:.85rem;">
+          {{ s.web.name if s.web else '🌐 Global' }}
+        </td>
+        <td style="color:var(--muted);">{{ s.fields | length }}</td>
+        <td style="color:var(--muted); font-size:.85rem;">{{ s.description or '—' }}</td>
+        <td style="text-align:right; white-space:nowrap;">
+          <a href="/forms/{{ s.id }}/edit" class="btn btn-secondary btn-sm">Edit</a>
+          <form method="post" action="/forms/{{ s.id }}/delete" style="display:inline;"
+                onsubmit="return confirm('Delete schema {{ s.name }}? Topics using it will lose their form assignment.')">
+            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">
+  <p>No form schemas yet.</p>
+  <a href="/forms/new" class="btn btn-primary">Create the first schema</a>
+</div>
+{% endif %}
+{% endblock %}

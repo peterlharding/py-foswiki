@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-header">
+  <h1>Search</h1>
+</div>
+
+<div class="card">
+  <form method="get" action="/search" style="display:flex; gap:.75rem; align-items:flex-end; flex-wrap:wrap;">
+    <div class="form-group" style="flex:1; min-width:200px; margin:0;">
+      <label for="q">Search query</label>
+      <input id="q" name="q" type="search" value="{{ q }}" autofocus placeholder="Enter search terms…">
+    </div>
+    <div class="form-group" style="width:160px; margin:0;">
+      <label for="web">Web (optional)</label>
+      <input id="web" name="web" type="text" value="{{ web_filter }}" placeholder="All webs">
+    </div>
+    <button type="submit" class="btn btn-primary">Search</button>
+  </form>
+</div>
+
+{% if q %}
+  {% if results %}
+  <p style="font-size:.85rem; color:var(--muted); margin-bottom:.75rem;">
+    {{ results | length }} result{{ 's' if results | length != 1 }} for <strong>{{ q }}</strong>
+  </p>
+  {% for r in results %}
+  <div class="card" style="margin-bottom:.75rem;">
+    <div style="display:flex; align-items:baseline; gap:.75rem; margin-bottom:.4rem;">
+      <a href="{{ r.url }}" style="font-weight:600; font-size:1rem;">{{ r.web }}.{{ r.topic }}</a>
+      <span style="font-size:.8rem; color:var(--muted);">r{{ r.version }}</span>
+      {% if r.author %}<span style="font-size:.8rem; color:var(--muted);">by {{ r.author }}</span>{% endif %}
+      {% if r.modified_at %}<span style="font-size:.8rem; color:var(--muted);">{{ r.modified_at }}</span>{% endif %}
+    </div>
+    <p style="font-size:.88rem; color:var(--muted); line-height:1.5;">{{ r.excerpt }}</p>
+  </div>
+  {% endfor %}
+  {% else %}
+  <div class="empty-state">
+    <p>No results for <strong>{{ q }}</strong>.</p>
+  </div>
+  {% endif %}
+{% endif %}
+{% endblock %}

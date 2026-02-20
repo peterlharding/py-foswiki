@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="breadcrumb">
+  <a href="/">Webs</a> / <a href="/webs/{{ web }}">{{ web }}</a> /
+  <a href="/webs/{{ web }}/topics/{{ topic.name }}">{{ topic.name }}</a> / History
+</div>
+<div class="page-header">
+  <h1>History — {{ topic.name }}</h1>
+</div>
+
+<div class="card" style="padding:0;">
+  <table>
+    <thead>
+      <tr>
+        <th>Rev</th>
+        <th>Date</th>
+        <th>Author</th>
+        <th>Comment</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for v in versions %}
+      <tr>
+        <td><strong>r{{ v.version }}</strong></td>
+        <td style="font-size:.85rem; color:var(--muted);">
+          {{ v.created_at.strftime('%Y-%m-%d %H:%M') if v.created_at else '—' }}
+        </td>
+        <td style="font-size:.85rem;">{{ v.author.username if v.author else '—' }}</td>
+        <td style="font-size:.85rem; color:var(--muted);">{{ v.comment or '—' }}</td>
+        <td style="text-align:right;">
+          <a href="/webs/{{ web }}/topics/{{ topic.name }}?version={{ v.version }}"
+             class="btn btn-secondary btn-sm">View</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

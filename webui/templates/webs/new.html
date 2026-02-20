@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="page-header">
+  <h1>New Web</h1>
+</div>
+{% if error %}
+<div class="flash error">{{ error }}</div>
+{% endif %}
+<div class="card" style="max-width:520px;">
+  <form method="post" action="/webs/new">
+    <div class="form-group">
+      <label for="name">Web name</label>
+      <input id="name" name="name" type="text" required autofocus placeholder="e.g. Main, Sandbox, Engineering">
+    </div>
+    <div class="form-group">
+      <label for="description">Description <span style="color:var(--muted)">(optional)</span></label>
+      <input id="description" name="description" type="text" maxlength="512">
+    </div>
+    <div style="display:flex; gap:.75rem;">
+      <button type="submit" class="btn btn-primary">Create Web</button>
+      <a href="/" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

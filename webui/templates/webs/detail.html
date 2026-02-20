@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="breadcrumb"><a href="/">Webs</a> / {{ web.name }}</div>
+<div class="page-header">
+  <h1>{{ web.name }}</h1>
+  <a href="/webs/{{ web.name }}/topics/new" class="btn btn-primary btn-sm">+ New Topic</a>
+</div>
+{% if web.description %}
+<p style="color:var(--muted); margin-bottom:1rem;">{{ web.description }}</p>
+{% endif %}
+
+{% if topics %}
+<div class="card" style="padding:0;">
+  <table>
+    <thead>
+      <tr>
+        <th>Topic</th>
+        <th>Version</th>
+        <th>Last modified</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in topics %}
+      <tr>
+        <td><a href="/webs/{{ web.name }}/topics/{{ t.name }}" style="font-weight:500;">{{ t.name }}</a></td>
+        <td style="color:var(--muted);">r{{ t.version }}</td>
+        <td style="color:var(--muted); font-size:.85rem;">{{ t.updated_at.strftime('%Y-%m-%d %H:%M') if t.updated_at else '—' }}</td>
+        <td style="text-align:right;">
+          <a href="/webs/{{ web.name }}/topics/{{ t.name }}/edit" class="btn btn-secondary btn-sm">Edit</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">
+  <p>No topics in this web yet.</p>
+  <a href="/webs/{{ web.name }}/topics/new" class="btn btn-primary">Create the first topic</a>
+</div>
+{% endif %}
+{% endblock %}

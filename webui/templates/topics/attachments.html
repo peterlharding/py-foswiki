@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="breadcrumb">
+  <a href="/">Webs</a> / <a href="/webs/{{ web }}">{{ web }}</a> /
+  <a href="/webs/{{ web }}/topics/{{ topic_name }}">{{ topic_name }}</a> / Attachments
+</div>
+<div class="page-header">
+  <h1>Attachments — {{ topic_name }}</h1>
+</div>
+
+{% if error %}<div class="flash error">{{ error }}</div>{% endif %}
+{% if success %}<div class="flash success">{{ success }}</div>{% endif %}
+
+<div class="card" style="max-width:560px; margin-bottom:1.25rem;">
+  <h2 style="font-size:1rem; margin-bottom:.75rem;">Upload file</h2>
+  <form method="post" action="/webs/{{ web }}/topics/{{ topic_name }}/attachments"
+        enctype="multipart/form-data">
+    <div class="form-group">
+      <label for="file">File</label>
+      <input id="file" name="file" type="file" required>
+    </div>
+    <div class="form-group">
+      <label for="comment">Comment <span style="color:var(--muted)">(optional)</span></label>
+      <input id="comment" name="comment" type="text" maxlength="512" placeholder="Brief description">
+    </div>
+    <button type="submit" class="btn btn-primary">Upload</button>
+  </form>
+</div>
+
+{% if attachments %}
+<div class="card" style="padding:0;">
+  <table>
+    <thead>
+      <tr>
+        <th>Filename</th>
+        <th>Size</th>
+        <th>Type</th>
+        <th>Uploaded</th>
+        <th>Comment</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for a in attachments %}
+      <tr>
+        <td>
+          <a href="/webs/{{ web }}/topics/{{ topic_name }}/attachments/{{ a.filename }}"
+             style="font-weight:500;">{{ a.filename }}</a>
+        </td>
+        <td style="color:var(--muted); font-size:.85rem; white-space:nowrap;">
+          {{ fmt_size(a.size_bytes) }}
+        </td>
+        <td style="color:var(--muted); font-size:.8rem;">{{ a.content_type }}</td>
+        <td style="color:var(--muted); font-size:.85rem; white-space:nowrap;">
+          {{ a.uploaded_at.strftime('%Y-%m-%d %H:%M') if a.uploaded_at else '—' }}
+        </td>
+        <td style="color:var(--muted); font-size:.85rem;">{{ a.comment or '—' }}</td>
+        <td style="text-align:right; white-space:nowrap;">
+          <a href="/webs/{{ web }}/topics/{{ topic_name }}/attachments/{{ a.filename }}"
+             class="btn btn-secondary btn-sm" download>⬇ Download</a>
+          <form method="post"
+                action="/webs/{{ web }}/topics/{{ topic_name }}/attachments/{{ a.filename }}/delete"
+                style="display:inline;"
+                onsubmit="return confirm('Delete {{ a.filename }}?')">
+            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">
+  <p>No attachments yet.</p>
+</div>
+{% endif %}
+{% endblock %}
