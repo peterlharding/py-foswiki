@@ -454,27 +454,8 @@ class TestAttachments:
 
 class TestACL:
     async def _setup_admin(self, client):
-        """Create an admin user."""
-        from app.core.database import get_session_factory
-        from app.models import User
-        from app.core.security import hash_password
-
-        # Create admin via DB directly
-        factory = get_session_factory()
-        async with factory() as db:
-            admin = User(
-                username="aclAdmin",
-                email="acladmin@example.com",
-                display_name="ACL Admin",
-                wiki_name="AclAdmin",
-                password_hash=hash_password("adminpass1"),
-                is_admin=True,
-            )
-            db.add(admin)
-            await db.commit()
-
-        r = await client.post("/api/v1/auth/token", data={"username": "aclAdmin", "password": "adminpass1"})
-        token = r.json()["access_token"]
+        """Create an admin user via the shared test session."""
+        _u, token = await create_user_and_token(client, "aclAdmin", "adminpass1")
         headers = {"Authorization": f"Bearer {token}"}
         await client.post("/api/v1/webs", json={"name": "AclWeb"}, headers=headers)
         await client.post("/api/v1/webs/AclWeb/topics", json={"name": "AclTopic", "content": "x"}, headers=headers)

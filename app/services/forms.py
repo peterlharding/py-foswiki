@@ -140,7 +140,8 @@ async def update_schema(
             ))
 
     await db.flush()
-    return await get_schema_by_id(db, schema.id)
+    await db.refresh(schema, ["fields"])
+    return schema
 
 
 # -----------------------------------------------------------------------------

@@ -1,14 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="breadcrumb">
-  <a href="/">Webs</a> / <a href="/webs/{{ web }}">{{ web }}</a> / {{ topic.name }}
-</div>
 <div class="page-header">
   <h1>{{ topic.name }}</h1>
-  <a href="/webs/{{ web }}/topics/{{ topic.name }}/edit" class="btn btn-secondary btn-sm">Edit</a>
-  <a href="/webs/{{ web }}/topics/{{ topic.name }}/raw" class="btn btn-secondary btn-sm">Raw</a>
-  <a href="/webs/{{ web }}/topics/{{ topic.name }}/attachments" class="btn btn-secondary btn-sm">📎 Attachments</a>
-  <a href="/webs/{{ web }}/topics/{{ topic.name }}/history" class="btn btn-secondary btn-sm">History</a>
   <form method="post" action="/webs/{{ web }}/topics/{{ topic.name }}/delete" style="display:inline;"
         onsubmit="return confirm('Delete {{ topic.name }}? This cannot be undone.')">
     <button type="submit" class="btn btn-danger btn-sm">Delete</button>

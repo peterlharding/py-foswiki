@@ -71,7 +71,10 @@ async def validate_reset_token(db: AsyncSession, raw_token: str) -> User:
     if not token_obj:
         raise HTTPException(status_code=400, detail="Invalid or expired reset link.")
 
-    if datetime.now(tz=timezone.utc) > token_obj.expires_at:
+    expires = token_obj.expires_at
+    if expires.tzinfo is None:
+        expires = expires.replace(tzinfo=timezone.utc)
+    if datetime.now(tz=timezone.utc) > expires:
         await db.delete(token_obj)
         await db.flush()
         raise HTTPException(status_code=400, detail="This reset link has expired. Please request a new one.")

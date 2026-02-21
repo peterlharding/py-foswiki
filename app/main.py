@@ -20,7 +20,7 @@ from fastapi.responses import JSONResponse
 
 from app.core.config import get_settings
 from app.core.database import create_all_tables, init_db
-from app.routes import auth, topics, webs, attachments, search, forms
+from app.routes import auth, topics, webs, attachments, search, forms, feeds, admin
 
 
 # -----------------------------------------------------------------------------
@@ -71,6 +71,8 @@ def create_app() -> FastAPI:
     app.include_router(attachments.router,  prefix=prefix)
     app.include_router(search.router,        prefix=prefix)
     app.include_router(forms.router,         prefix=prefix)
+    app.include_router(feeds.router,         prefix=prefix)
+    app.include_router(admin.router,         prefix=prefix)
 
     # ── Global exception handlers ─────────────────────────────────────────────
 

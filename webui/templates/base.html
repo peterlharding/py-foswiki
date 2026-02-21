@@ -18,59 +18,71 @@
       --warning:   #d97706;
       --text:      #1e293b;
       --muted:     #64748b;
-      --sidebar-w: 220px;
-      --header-h:  52px;
+      --topbar-bg: #1e3a5f;
+      --menu-bg:   #162d4a;
     }
 
-    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
 
-    /* ── Header ── */
-    header {
-      position: fixed; top: 0; left: 0; right: 0; height: var(--header-h);
-      background: var(--primary); color: #fff;
-      display: flex; align-items: center; padding: 0 1rem; gap: 1rem;
-      z-index: 100; box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    /* ── Top bar ── */
+    .nat-topbar {
+      position: sticky; top: 0; z-index: 200;
+      background: var(--topbar-bg);
+      display: flex; align-items: stretch; height: 52px;
+      box-shadow: 0 2px 6px rgba(0,0,0,.35);
     }
-    header .brand { font-weight: 700; font-size: 1.1rem; text-decoration: none; color: #fff; }
-    header .spacer { flex: 1; }
-    header form.search-form { display: flex; gap: .4rem; }
-    header form.search-form input {
-      padding: .3rem .6rem; border-radius: 4px; border: none;
-      font-size: .9rem; width: 220px;
-    }
-    header form.search-form button {
-      padding: .3rem .7rem; border-radius: 4px; border: none;
-      background: rgba(255,255,255,.2); color: #fff; cursor: pointer;
-    }
-    header form.search-form button:hover { background: rgba(255,255,255,.35); }
-    header nav a {
-      color: rgba(255,255,255,.85); text-decoration: none; font-size: .9rem; padding: .25rem .5rem;
-      border-radius: 4px;
-    }
-    header nav a:hover { background: rgba(255,255,255,.15); color: #fff; }
-    header .user-info { font-size: .85rem; color: rgba(255,255,255,.8); }
+    .nat-logo { display: flex; align-items: center; padding: 0 1.1rem; text-decoration: none; color: #fff; font-weight: 700; font-size: 1.05rem; white-space: nowrap; gap: .45rem; border-right: 1px solid rgba(255,255,255,.1); }
+    .nat-logo:hover { background: rgba(255,255,255,.08); }
+    .nat-webmenu { display: flex; align-items: stretch; list-style: none; }
+    .nat-webmenu > li { position: relative; display: flex; align-items: stretch; }
+    .nat-webmenu > li > a, .nat-webmenu > li > span { display: flex; align-items: center; padding: 0 .9rem; color: rgba(255,255,255,.88); text-decoration: none; font-size: .88rem; cursor: pointer; white-space: nowrap; gap: .3rem; border-right: 1px solid rgba(255,255,255,.07); }
+    .nat-webmenu > li > a:hover, .nat-webmenu > li > span:hover, .nat-webmenu > li:hover > a, .nat-webmenu > li:hover > span { background: var(--menu-bg); color: #fff; }
+    .nat-webmenu .dropdown { display: none; position: absolute; top: 100%; left: 0; background: var(--surface); border: 1px solid var(--border); border-top: 2px solid var(--primary); min-width: 200px; box-shadow: 0 4px 12px rgba(0,0,0,.15); z-index: 300; }
+    .nat-webmenu > li:hover .dropdown { display: block; }
+    .nat-webmenu .dropdown a { display: block; padding: .5rem 1rem; color: var(--text); text-decoration: none; font-size: .88rem; border-bottom: 1px solid var(--border); }
+    .nat-webmenu .dropdown a:last-child { border-bottom: none; }
+    .nat-webmenu .dropdown a:hover { background: #eff6ff; color: var(--primary); }
+    .nat-webmenu .dropdown .drop-section { padding: .3rem 1rem .1rem; font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); background: var(--bg); }
+    .nat-search { flex: 1; display: flex; align-items: center; padding: 0 .8rem; }
+    .nat-search form { display: flex; gap: .3rem; width: 100%; max-width: 340px; }
+    .nat-search input { flex: 1; padding: .32rem .65rem; border-radius: 4px; border: none; font-size: .88rem; background: rgba(255,255,255,.15); color: #fff; }
+    .nat-search input::placeholder { color: rgba(255,255,255,.55); }
+    .nat-search input:focus { outline: none; background: rgba(255,255,255,.25); }
+    .nat-search button { padding: .32rem .7rem; border-radius: 4px; border: none; background: rgba(255,255,255,.18); color: #fff; cursor: pointer; font-size: .85rem; }
+    .nat-search button:hover { background: rgba(255,255,255,.3); }
+    .nat-user-actions { display: flex; align-items: stretch; list-style: none; }
+    .nat-user-actions > li { position: relative; display: flex; align-items: stretch; }
+    .nat-user-actions > li > a, .nat-user-actions > li > span { display: flex; align-items: center; padding: 0 .85rem; color: rgba(255,255,255,.88); text-decoration: none; font-size: .85rem; cursor: pointer; white-space: nowrap; gap: .3rem; border-left: 1px solid rgba(255,255,255,.07); }
+    .nat-user-actions > li > a:hover, .nat-user-actions > li > span:hover, .nat-user-actions > li:hover > a, .nat-user-actions > li:hover > span { background: var(--menu-bg); color: #fff; }
+    .nat-user-actions .dropdown { display: none; position: absolute; top: 100%; right: 0; background: var(--surface); border: 1px solid var(--border); border-top: 2px solid var(--primary); min-width: 180px; box-shadow: 0 4px 12px rgba(0,0,0,.15); z-index: 300; }
+    .nat-user-actions > li:hover .dropdown { display: block; }
+    .nat-user-actions .dropdown a { display: block; padding: .5rem 1rem; color: var(--text); text-decoration: none; font-size: .88rem; border-bottom: 1px solid var(--border); }
+    .nat-user-actions .dropdown a:last-child { border-bottom: none; }
+    .nat-user-actions .dropdown a:hover { background: #eff6ff; color: var(--primary); }
+    .nat-user-actions .dropdown hr { border: none; border-top: 1px solid var(--border); margin: .2rem 0; }
 
-    /* ── Sidebar ── */
-    .layout { display: flex; margin-top: var(--header-h); min-height: calc(100vh - var(--header-h)); }
-    aside {
-      width: var(--sidebar-w); flex-shrink: 0;
-      background: var(--surface); border-right: 1px solid var(--border);
-      padding: 1rem 0; position: sticky; top: var(--header-h);
-      height: calc(100vh - var(--header-h)); overflow-y: auto;
-    }
-    aside .section-label {
-      font-size: .7rem; font-weight: 600; text-transform: uppercase;
-      letter-spacing: .06em; color: var(--muted); padding: .6rem 1rem .2rem;
-    }
-    aside a {
-      display: block; padding: .4rem 1rem; color: var(--text);
-      text-decoration: none; font-size: .9rem; border-left: 3px solid transparent;
-    }
-    aside a:hover { background: var(--bg); color: var(--primary); }
-    aside a.active { border-left-color: var(--primary); color: var(--primary); background: #eff6ff; font-weight: 500; }
+    /* ── Topic action bar ── */
+    .nat-topic-actions { background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 1.5rem; gap: .3rem; min-height: 40px; flex-wrap: wrap; }
+    .nat-topic-actions .breadcrumb { flex: 1; font-size: .82rem; color: var(--muted); }
+    .nat-topic-actions .breadcrumb a { color: var(--primary); text-decoration: none; }
+    .nat-topic-actions .breadcrumb a:hover { text-decoration: underline; }
+    .nat-action-btn { display: inline-flex; align-items: center; gap: .3rem; padding: .28rem .65rem; border-radius: 4px; font-size: .82rem; text-decoration: none; color: var(--text); border: 1px solid var(--border); background: var(--surface); cursor: pointer; white-space: nowrap; }
+    .nat-action-btn:hover { background: var(--bg); border-color: #b0b8c8; color: var(--primary); }
+    .nat-action-btn.primary { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .nat-action-btn.primary:hover { background: var(--primary-h); }
+    .nat-action-btn.danger { background: var(--danger); color: #fff; border-color: var(--danger); }
+    .nat-more { position: relative; }
+    .nat-more .dropdown { display: none; position: absolute; top: 100%; right: 0; background: var(--surface); border: 1px solid var(--border); border-top: 2px solid var(--primary); min-width: 220px; box-shadow: 0 4px 12px rgba(0,0,0,.15); z-index: 300; }
+    .nat-more:hover .dropdown { display: block; }
+    .nat-more .dropdown .drop-section { padding: .4rem 1rem .15rem; font-size: .72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); background: var(--bg); }
+    .nat-more .dropdown a { display: flex; align-items: center; gap: .5rem; padding: .45rem 1rem; color: var(--text); text-decoration: none; font-size: .85rem; border-bottom: 1px solid var(--border); }
+    .nat-more .dropdown a:last-child { border-bottom: none; }
+    .nat-more .dropdown a:hover { background: #eff6ff; color: var(--primary); }
+    .nat-more .dropdown hr { border: none; border-top: 1px solid var(--border); margin: .2rem 0; }
 
     /* ── Main content ── */
-    main { flex: 1; padding: 1.5rem 2rem; max-width: 960px; }
+    .nat-body { flex: 1; }
+    .nat-main { max-width: 1060px; margin: 0 auto; padding: 1.5rem 2rem; }
 
     /* ── Flash messages ── */
     .flash {
@@ -139,6 +151,16 @@
     .breadcrumb a { color: var(--primary); text-decoration: none; }
     .breadcrumb a:hover { text-decoration: underline; }
 
+    /* ── Bottom bar ── */
+    .nat-bottombar { background: var(--topbar-bg); color: rgba(255,255,255,.65); font-size: .8rem; padding: .9rem 2rem; text-align: center; }
+    .nat-bottombar a { color: rgba(255,255,255,.75); text-decoration: none; }
+    .nat-bottombar a:hover { color: #fff; text-decoration: underline; }
+
+    /* ── Scroll to top ── */
+    .scroll-top { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--primary); color: #fff; border: none; border-radius: 50%; width: 38px; height: 38px; font-size: 1.1rem; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.25); display: none; align-items: center; justify-content: center; z-index: 400; }
+    .scroll-top.visible { display: flex; }
+    .scroll-top:hover { background: var(--primary-h); }
+
     /* ── Editor ── */
     .editor-toolbar { display: flex; gap: .5rem; margin-bottom: .5rem; flex-wrap: wrap; }
     textarea.code-editor {
@@ -151,76 +173,141 @@
     .empty-state p { margin-bottom: 1rem; }
   </style>
 </head>
-<body>
+<body id="PageTop">
 
-<header>
-  <a class="brand" href="/">🌿 PyFoswiki</a>
-  <div class="spacer"></div>
+<!-- ═══════════════════════════════════════════════════════════ TOP BAR -->
+<nav class="nat-topbar">
+  <a class="nat-logo" href="/">🌿 PyFoswiki</a>
+
   {% if user %}
-  <form class="search-form" method="get" action="/search">
-    <input type="search" name="q" placeholder="Search…" value="{{ request.query_params.get('q', '') }}">
-    <button type="submit">Go</button>
-  </form>
-  <nav>
-    <a href="/">Webs</a>
-  </nav>
-  <span class="user-info">{{ user.display_name or user.username }}</span>
-  <nav>
-    <a href="/logout">Sign out</a>
-  </nav>
-  {% endif %}
-</header>
-
-<div class="layout">
-  {% if user %}
-  <aside>
-    <div class="section-label">Navigation</div>
-    <a href="/" {% if request.url.path == '/' %}class="active"{% endif %}>🏠 Home</a>
-    <a href="/search" {% if request.url.path == '/search' %}class="active"{% endif %}>🔍 Search</a>
-
-    {% if ctx.web %}
-    <div class="section-label">{{ ctx.web }}</div>
-    <a href="/webs/{{ ctx.web }}">📂 Topics</a>
-    <a href="/webs/{{ ctx.web }}/topics/new">✏️ New Topic</a>
-    {% if ctx.topic %}
-    <a href="/webs/{{ ctx.web }}/topics/{{ ctx.topic }}" {% if request.url.path.endswith(ctx.topic) %}class="active"{% endif %}>📄 View</a>
-    <a href="/webs/{{ ctx.web }}/topics/{{ ctx.topic }}/edit">✏️ Edit</a>
-    <a href="/webs/{{ ctx.web }}/topics/{{ ctx.topic }}/raw">🔤 Raw</a>
-    <a href="/webs/{{ ctx.web }}/topics/{{ ctx.topic }}/history">🕐 History</a>
-    <a href="/webs/{{ ctx.web }}/topics/{{ ctx.topic }}/attachments">📎 Attachments</a>
-    <a href="/webs/{{ ctx.web }}/topics/{{ ctx.topic }}/form">📋 DataForm</a>
-    {% if user.is_admin %}
-    <a href="/webs/{{ ctx.web }}/topics/{{ ctx.topic }}/acl">🔒 Topic ACL</a>
+  <ul class="nat-webmenu">
+    <li>
+      <a href="/">Webs ▾</a>
+      <div class="dropdown">
+        <div class="drop-section">Webs</div>
+        <a href="/">📂 All Webs</a>
+        {% if ctx and ctx.web %}
+        <a href="/webs/{{ ctx.web }}">📄 {{ ctx.web }}</a>
+        {% endif %}
+        {% if user.is_admin %}<a href="/webs/new">➕ New Web</a>{% endif %}
+      </div>
+    </li>
+    {% if ctx and ctx.web %}
+    <li>
+      <a href="/webs/{{ ctx.web }}">{{ ctx.web }} ▾</a>
+      <div class="dropdown">
+        <div class="drop-section">{{ ctx.web }}</div>
+        <a href="/webs/{{ ctx.web }}">📂 Topics</a>
+        <a href="/webs/{{ ctx.web }}/topics/new">✏️ New Topic</a>
+        {% if user.is_admin %}<a href="/webs/{{ ctx.web }}/acl">🔒 Web ACL</a>{% endif %}
+        <a href="/api/v1/webs/{{ ctx.web }}/feeds/rss">📡 RSS Feed</a>
+        <a href="/api/v1/webs/{{ ctx.web }}/feeds/atom">📡 Atom Feed</a>
+      </div>
+    </li>
     {% endif %}
-    {% endif %}
-    {% if user.is_admin %}
-    <a href="/webs/{{ ctx.web }}/acl">🔒 Web ACL</a>
-    {% endif %}
-    {% endif %}
-
-    <div class="section-label">Account</div>
-    <a href="/profile" {% if request.url.path == '/profile' %}class="active"{% endif %}>👤 My Profile</a>
-    <a href="/profile/password" {% if request.url.path == '/profile/password' %}class="active"{% endif %}>🔑 Change Password</a>
-
-    {% if user.is_admin %}
-    <div class="section-label">Admin</div>
-    <a href="/webs/new">➕ New Web</a>
-    <a href="/users" {% if request.url.path.startswith('/users') %}class="active"{% endif %}>👥 Manage Users</a>
-    <a href="/register">➕ New User</a>
-    <a href="/groups" {% if request.url.path.startswith('/groups') %}class="active"{% endif %}>👥 WikiGroups</a>
-    <a href="/forms" {% if request.url.path.startswith('/forms') %}class="active"{% endif %}>📋 Form Schemas</a>
-    <a href="/admin/settings" {% if request.url.path.startswith('/admin') %}class="active"{% endif %}>⚙️ Site Settings</a>
-    {% endif %}
-  </aside>
+    <li>
+      <a href="/search">Search</a>
+    </li>
+  </ul>
   {% endif %}
 
-  <main>
+  <div class="nat-search">
+    {% if user %}
+    <form method="get" action="/search">
+      <input type="search" name="q" placeholder="Search…" value="{{ request.query_params.get('q', '') }}">
+      <button type="submit">Go</button>
+    </form>
+    {% endif %}
+  </div>
+
+  {% if user %}
+  <ul class="nat-user-actions">
+    {% if ctx and ctx.web %}
+    <li><a href="/webs/{{ ctx.web }}/topics/new" class="nat-action-btn primary" style="border:none;">+ New</a></li>
+    {% endif %}
+    <li>
+      <span>{{ user.display_name or user.username }} ▾</span>
+      <div class="dropdown">
+        <a href="/profile">👤 My Profile</a>
+        <a href="/profile/password">🔑 Change Password</a>
+        {% if user.is_admin %}
+        <hr>
+        <a href="/users">👥 Manage Users</a>
+        <a href="/groups">👥 WikiGroups</a>
+        <a href="/forms">📋 Form Schemas</a>
+        <a href="/admin/settings">⚙️ Site Settings</a>
+        {% endif %}
+        <hr>
+        <a href="/logout">⏻ Sign out</a>
+      </div>
+    </li>
+  </ul>
+  {% else %}
+  <ul class="nat-user-actions">
+    <li><a href="/login">Sign in</a></li>
+  </ul>
+  {% endif %}
+</nav>
+
+<!-- ══════════════════════════════════════════════════ TOPIC ACTION BAR -->
+{% if user and ctx and (ctx.web or ctx.topic) %}
+<div class="nat-topic-actions">
+  <span class="breadcrumb">
+    You are here:
+    <a href="/">Home</a>
+    {% if ctx.web %} / <a href="/webs/{{ ctx.web }}">{{ ctx.web }}</a>{% endif %}
+    {% if ctx.topic %} / {{ ctx.topic }}{% endif %}
+  </span>
+
+  {% if ctx.topic %}
+  <a href="/webs/{{ ctx.web }}/topics/{{ ctx.topic }}/edit" class="nat-action-btn">✏️ Edit</a>
+  <a href="/webs/{{ ctx.web }}/topics/{{ ctx.topic }}/raw" class="nat-action-btn">� Raw</a>
+  <a href="/webs/{{ ctx.web }}/topics/{{ ctx.topic }}/history" class="nat-action-btn">🕐 History</a>
+  <div class="nat-more">
+    <span class="nat-action-btn">⋯ More ▾</span>
+    <div class="dropdown">
+      <div class="drop-section">View</div>
+      <a href="/webs/{{ ctx.web }}/topics/{{ ctx.topic }}/raw">🔤 Wiki markup</a>
+      <a href="/webs/{{ ctx.web }}/topics/{{ ctx.topic }}/history">🕐 Revision history</a>
+      <a href="/webs/{{ ctx.web }}/topics/{{ ctx.topic }}/attachments">📎 Attachments</a>
+      <div class="drop-section">Change</div>
+      <a href="/webs/{{ ctx.web }}/topics/{{ ctx.topic }}/edit">✏️ Edit</a>
+      <a href="/webs/{{ ctx.web }}/topics/{{ ctx.topic }}/form">� DataForm</a>
+      {% if user.is_admin %}
+      <div class="drop-section">Admin</div>
+      <a href="/webs/{{ ctx.web }}/topics/{{ ctx.topic }}/acl">🔒 Topic ACL</a>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endif %}
+
+<!-- ═══════════════════════════════════════════════════════ MAIN CONTENT -->
+<div class="nat-body">
+  <div class="nat-main">
     {% if flash %}
     <div class="flash {{ flash_type }}">{{ flash }}</div>
     {% endif %}
     {% block content %}{% endblock %}
-  </main>
+  </div>
 </div>
+
+<!-- ══════════════════════════════════════════════════════ BOTTOM BAR -->
+<footer class="nat-bottombar">
+  Copyright &copy; by the contributing authors. All material on this collaboration platform is the property of the contributing authors.<br>
+  Powered by <a href="https://github.com/">PyFoswiki</a> &mdash;
+  <a href="/api/v1/feeds/rss">RSS</a> &middot;
+  <a href="/api/v1/feeds/atom">Atom</a>
+</footer>
+
+<button class="scroll-top" id="scrollTop" title="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">▲</button>
+
+<script>
+  window.addEventListener('scroll', function() {
+    document.getElementById('scrollTop').classList.toggle('visible', window.scrollY > 300);
+  });
+</script>
 
 </body>
 </html>

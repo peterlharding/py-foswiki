@@ -145,6 +145,9 @@ async def check_permission(
     """
     Return True if *user* (or anonymous if None) has *permission* on the resource.
     """
+    if user and user.is_admin:
+        return True   # admins bypass ACL entirely
+
     entries = await get_acl(db, resource_type, resource_id)
     if not entries:
         # No ACL configured → use defaults
@@ -156,8 +159,6 @@ async def check_permission(
         principals.add(f"user:{user.username}")
         for g in user.groups_list():
             principals.add(f"group:{g}")
-        if user.is_admin:
-            return True   # admins bypass ACL
 
     result = _eval_entries(entries, permission, principals)
     if result is not None:

@@ -1,11 +1,5 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="breadcrumb">
-  <a href="/">Webs</a>
-  {% if ctx.web %} / <a href="/webs/{{ ctx.web }}">{{ ctx.web }}</a>{% endif %}
-  {% if ctx.topic %} / <a href="/webs/{{ ctx.web }}/topics/{{ ctx.topic }}">{{ ctx.topic }}</a>{% endif %}
-  / ACL
-</div>
 <div class="page-header">
   <h1>🔒 Access Control — {{ resource_label }}</h1>
   <a href="{{ cancel_url }}" class="btn btn-secondary btn-sm">Cancel</a>

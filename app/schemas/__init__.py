@@ -49,7 +49,7 @@ class UserCreate(BaseModel):
     @field_validator("username")
     @classmethod
     def username_not_reserved(cls, v: str) -> str:
-        reserved = {"system", "guest", "anonymous"}
+        reserved = {"admin", "system", "guest", "anonymous"}
         if v.lower() in reserved:
             raise ValueError(f"Username '{v}' is reserved")
         return v
@@ -290,6 +290,57 @@ class ACLResponse(BaseModel):
     resource_type: str
     resource_id: str
     entries: list[ACLEntry]
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Admin  (Phase 6)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+class AdminStatsResponse(BaseModel):
+    user_count: int
+    admin_count: int
+    inactive_user_count: int
+    web_count: int
+    topic_count: int
+    version_count: int
+
+
+class AdminConfigResponse(BaseModel):
+    site_name: str
+    base_url: str
+    allow_registration: bool
+    default_web: str
+    admin_email: str
+    app_version: str
+    environment: str
+
+
+class AdminConfigUpdate(BaseModel):
+    site_name: Optional[str] = Field(None, min_length=1, max_length=128)
+    allow_registration: Optional[bool] = None
+    default_web: Optional[str] = Field(None, min_length=1, max_length=128)
+    admin_email: Optional[str] = None
+
+
+class UserAdminResponse(BaseModel):
+    """Extended user response that includes is_active (admin-only field)."""
+    id: str
+    username: str
+    email: str
+    display_name: str
+    wiki_name: str
+    is_admin: bool
+    is_active: bool
+    groups: list[str]
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class PluginInfo(BaseModel):
+    name: str
+    enabled: bool
+    plugin_class: str
 
 
 # -----------------------------------------------------------------------------

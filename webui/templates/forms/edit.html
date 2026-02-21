@@ -1,10 +1,8 @@
 {% extends "base.html" %}
 {% block content %}
 {% if schema %}
-<div class="breadcrumb"><a href="/forms">Form Schemas</a> / {{ schema.name }}</div>
 <div class="page-header"><h1>Edit {{ schema.name }}</h1></div>
 {% else %}
-<div class="breadcrumb"><a href="/forms">Form Schemas</a> / New</div>
 <div class="page-header"><h1>New Form Schema</h1></div>
 {% endif %}
 
